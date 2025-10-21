@@ -1,0 +1,21 @@
+{
+  "name": "fishkoi3d-image-processor",
+  "version": "1.0.0",
+  "description": "Script để tạo thumbnail và JSON metadata cho ảnh FishKoi3D",
+  "main": "image-processor.js",
+  "scripts": {
+    "thumbnail": "node image-processor.js thumbnail",
+    "json": "node image-processor.js json",
+    "both": "node image-processor.js both"
+  },
+  "dependencies": {
+    "sharp": "^0.33.0"
+  },
+  "keywords": [
+    "image",
+    "thumbnail",
+    "processing"
+  ],
+  "author": "",
+  "license": "MIT"
+}
