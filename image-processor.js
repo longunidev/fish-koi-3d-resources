@@ -14,8 +14,8 @@ const CONFIG = {
 
   // Kích thước thumbnail (có thể điều chỉnh)
   THUMBNAIL_SIZE: {
-    width: 180,
-    height: 320,
+    width: 320,
+    height: 569,
   },
 
   // Định dạng file được hỗ trợ
