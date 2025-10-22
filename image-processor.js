@@ -5,7 +5,8 @@ const sharp = require("sharp");
 // Cấu hình
 const CONFIG = {
   // Domain chứa ảnh - thay đổi theo môi trường của bạn
-  DOMAIN: process.env.DOMAIN || "https://your-domain.com",
+  DOMAIN:
+    process.env.DOMAIN || "https://longunidev.github.io/fish-koi-3d-resources",
 
   // Đường dẫn thư mục
   BACKGROUND_DIR: path.join(__dirname, "background"),
@@ -81,6 +82,12 @@ async function createThumbnail(imageFile) {
     // Tạo thư mục thumbnail nếu chưa có
     ensureDirectoryExists(thumbnailDir);
 
+    // Bỏ qua nếu thumbnail đã tồn tại
+    if (fs.existsSync(thumbnailPath)) {
+      console.log(`⏭️  Bỏ qua (đã có): ${imageFile.relativePath}`);
+      return "skipped";
+    }
+
     // Tạo thumbnail với sharp
     await sharp(imageFile.fullPath)
       .resize(CONFIG.THUMBNAIL_SIZE.width, CONFIG.THUMBNAIL_SIZE.height, {
@@ -91,13 +98,13 @@ async function createThumbnail(imageFile) {
       .toFile(thumbnailPath);
 
     console.log(`✅ Đã tạo thumbnail: ${imageFile.relativePath}`);
-    return true;
+    return "created";
   } catch (error) {
     console.error(
       `❌ Lỗi khi tạo thumbnail cho ${imageFile.relativePath}:`,
       error.message
     );
-    return false;
+    return "error";
   }
 }
 
@@ -115,18 +122,22 @@ async function generateThumbnails() {
 
   let successCount = 0;
   let errorCount = 0;
+  let skippedCount = 0;
 
   for (const imageFile of imageFiles) {
-    const success = await createThumbnail(imageFile);
-    if (success) {
+    const status = await createThumbnail(imageFile);
+    if (status === "created") {
       successCount++;
-    } else {
+    } else if (status === "skipped") {
+      skippedCount++;
+    } else if (status === "error") {
       errorCount++;
     }
   }
 
   console.log(`\n📊 Kết quả tạo thumbnail:`);
   console.log(`✅ Thành công: ${successCount}`);
+  console.log(`⏭️  Bỏ qua: ${skippedCount}`);
   console.log(`❌ Lỗi: ${errorCount}`);
 }
 
