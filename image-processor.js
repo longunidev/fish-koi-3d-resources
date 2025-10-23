@@ -23,6 +23,23 @@ const CONFIG = {
 };
 
 /**
+ * Chuyển slug/thư mục thành tên danh mục dạng Title Case
+ * Ví dụ: "shell_field" => "Shell Field", "mud-and_algae" => "Mud And Algae"
+ */
+function formatCategoryName(input) {
+  if (!input || typeof input !== "string" || input === ".") return "Default";
+  const cleaned = input
+    .replace(/[\/_-]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+  return cleaned
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
+
+/**
  * Tạo thư mục nếu chưa tồn tại
  */
 function ensureDirectoryExists(dirPath) {
@@ -151,12 +168,15 @@ function generateJsonMetadata() {
   const metadata = [];
 
   for (const imageFile of imageFiles) {
-    const category = imageFile.category || "default";
+    const categorySlug = imageFile.category || "default";
+    const base = path.basename(categorySlug);
+    const baseCategory = !base || base === "." ? "default" : base;
+    const category = formatCategoryName(baseCategory);
     const url = `${CONFIG.DOMAIN}/background/${imageFile.relativePath}`;
     const thumbnail = `${CONFIG.DOMAIN}/thumbnail/${imageFile.relativePath}`;
 
     metadata.push({
-      category: category.charAt(0).toUpperCase() + category.slice(1),
+      category: category,
       url: url,
       thumbnail: thumbnail,
       filename: imageFile.filename,
